@@ -27,7 +27,7 @@ export default function Login() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log("登入成功", { email, password, rememberMe });
       // 登入成功後重定向到首頁
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     } catch (err) {
       setError("登入失敗，請檢查您的電子郵件和密碼。");
     } finally {
@@ -35,29 +35,16 @@ export default function Login() {
     }
   };
 
-  // 表單動畫變體
-  const formVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
-  };
-
   // 如果組件尚未掛載，則返回 null 以避免 SSR 時的錯誤
   if (!mounted) return null;
 
   return (
-    <div className="px-8 pb-8">
+    <div>
       {error && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          className="mb-6 rounded-lg bg-red-50 p-3 text-sm text-red-700 border-l-4 border-red-500 shadow-sm"
+          className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 border-l-4 border-red-500"
         >
           <div className="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-red-500" viewBox="0 0 20 20" fill="currentColor">
@@ -72,7 +59,7 @@ export default function Login() {
         </motion.div>
       )}
 
-      <motion.form className="space-y-5" variants={formVariants} initial="hidden" animate="visible" onSubmit={handleSubmit}>
+      <motion.form className="space-y-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} onSubmit={handleSubmit}>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
             電子郵件
@@ -92,7 +79,7 @@ export default function Login() {
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="pl-10 block w-full appearance-none rounded-lg border border-gray-300 px-3 py-3 placeholder-gray-400 shadow-sm focus:border-purple-500 focus:ring-purple-500 focus:outline-none sm:text-sm transition-all"
+              className="pl-10 block w-full appearance-none rounded-lg border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-purple-500 focus:ring-purple-500 focus:outline-none sm:text-sm transition-all"
               placeholder="您的電子郵件"
             />
           </div>
@@ -127,33 +114,31 @@ export default function Login() {
               required
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="pl-10 block w-full appearance-none rounded-lg border border-gray-300 px-3 py-3 placeholder-gray-400 shadow-sm focus:border-purple-500 focus:ring-purple-500 focus:outline-none sm:text-sm transition-all"
+              className="pl-10 block w-full appearance-none rounded-lg border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-purple-500 focus:ring-purple-500 focus:outline-none sm:text-sm transition-all"
               placeholder="••••••••"
             />
           </div>
         </div>
 
         <div className="flex items-center">
-          <div className="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              checked={rememberMe}
-              onChange={e => setRememberMe(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 transition-colors"
-            />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-              記住我
-            </label>
-          </div>
+          <input
+            id="remember-me"
+            name="remember-me"
+            type="checkbox"
+            checked={rememberMe}
+            onChange={e => setRememberMe(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 transition-colors"
+          />
+          <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+            記住我
+          </label>
         </div>
 
         <div>
           <motion.button
             type="submit"
             disabled={loading}
-            className="flex w-full justify-center rounded-lg border border-transparent bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-3 text-sm font-medium text-white shadow-sm hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 transition-all duration-300"
+            className="flex w-full justify-center rounded-lg border border-transparent bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 transition-all duration-300"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -176,7 +161,7 @@ export default function Login() {
         </div>
       </motion.form>
 
-      <div className="mt-6">
+      <div className="mt-4">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-200"></div>
@@ -186,10 +171,10 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-3 gap-3">
+        <div className="mt-4 grid grid-cols-3 gap-3">
           <motion.button
             type="button"
-            className="inline-flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-all"
+            className="inline-flex w-full justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-all"
             whileHover={{ y: -2, boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" }}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -214,7 +199,7 @@ export default function Login() {
           </motion.button>
           <motion.button
             type="button"
-            className="inline-flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-all"
+            className="inline-flex w-full justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-all"
             whileHover={{ y: -2, boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" }}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -223,7 +208,7 @@ export default function Login() {
           </motion.button>
           <motion.button
             type="button"
-            className="inline-flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-all"
+            className="inline-flex w-full justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-all"
             whileHover={{ y: -2, boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" }}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
