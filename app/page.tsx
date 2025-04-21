@@ -35,7 +35,7 @@ export default function Home() {
       title: "智能分類",
       description: "自動分析並分類您的待辦事項，讓工作更有條理",
       icon: (
-        <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -44,21 +44,27 @@ export default function Home() {
           />
         </svg>
       ),
+      bgGradient: "from-blue-50 to-purple-50",
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-600",
     },
     {
       title: "優先級排序",
       description: "智能推薦任務優先級，幫助您專注於最重要的事項",
       icon: (
-        <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       ),
+      bgGradient: "from-purple-50 to-pink-50",
+      iconBg: "bg-purple-100",
+      iconColor: "text-purple-600",
     },
     {
       title: "協同合作",
       description: "輕鬆與團隊成員共享任務，提高協作效率",
       icon: (
-        <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -67,6 +73,9 @@ export default function Home() {
           />
         </svg>
       ),
+      bgGradient: "from-green-50 to-teal-50",
+      iconBg: "bg-green-100",
+      iconColor: "text-green-600",
     },
   ];
 
@@ -210,8 +219,12 @@ export default function Home() {
       </div>
 
       {/* 特色功能區塊 */}
-      <div id="features" className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div id="features" className="py-20 bg-gradient-to-b from-white via-purple-50/30 to-white overflow-hidden relative">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-[40%] -right-[10%] w-[60%] h-[80%] rounded-full bg-purple-100/30 blur-3xl"></div>
+          <div className="absolute -bottom-[30%] -left-[10%] w-[50%] h-[70%] rounded-full bg-blue-100/20 blur-3xl"></div>
+        </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 20 }}
@@ -219,19 +232,33 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
+            <span className="inline-block px-4 py-1.5 mb-4 text-sm font-medium text-purple-700 bg-purple-100 rounded-full">功能特色</span>
             <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">智能功能，提升效率</h2>
-            <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-500">我們的智能待辦事項應用提供多種先進功能，幫助您更有效地管理任務。</p>
+            <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-600">我們的智能待辦事項應用提供多種先進功能，幫助您更有效地管理任務。</p>
           </motion.div>
 
           <motion.div className="mt-12" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((feature, index) => (
-                <motion.div key={index} className="relative rounded-xl border border-gray-200 bg-white p-6 shadow-sm" variants={itemVariants}>
-                  <div>
-                    <div className="absolute flex h-12 w-12 items-center justify-center rounded-md bg-purple-100">{feature.icon}</div>
-                    <h3 className="mt-2 ml-16 text-lg font-medium text-gray-900">{feature.title}</h3>
+                <motion.div
+                  key={index}
+                  className={`relative overflow-hidden rounded-2xl border border-gray-100 bg-gradient-to-br ${feature.bgGradient} p-8 shadow-card transition-all duration-300 hover:shadow-card-hover group`}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.03, y: -8 }}
+                >
+                  <div
+                    className="absolute right-0 bottom-0 w-32 h-32 rounded-tl-[100px] bg-white/20 -mr-8 -mb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ backdropFilter: "blur(5px)" }}
+                  ></div>
+                  <div className="flex flex-col items-center text-center relative z-10">
+                    <div
+                      className={`flex h-20 w-20 items-center justify-center rounded-full ${feature.iconBg} mb-6 transition-all duration-500 group-hover:scale-110`}
+                    >
+                      <span className={feature.iconColor}>{feature.icon}</span>
+                    </div>
+                    <h3 className="mb-4 text-xl font-bold text-gray-900 transition-all duration-300 group-hover:text-purple-700">{feature.title}</h3>
+                    <p className="text-base text-gray-600 transition-all duration-300 group-hover:text-gray-700">{feature.description}</p>
                   </div>
-                  <p className="mt-4 text-base text-gray-500">{feature.description}</p>
                 </motion.div>
               ))}
             </div>
