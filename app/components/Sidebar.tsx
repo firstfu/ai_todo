@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Calendar, CheckCircle, Home, ListTodo, Plus, Settings, Star, BarChart2, Clock, Bell, FolderPlus } from "lucide-react";
+import { Calendar, CheckCircle, ListTodo, Plus, Settings, Star, BarChart2, Clock, Bell, FolderPlus } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -23,7 +23,6 @@ export default function Sidebar() {
   ]);
 
   const mainNavItems: NavItem[] = [
-    { name: "儀表板", href: "/dashboard", icon: <Home size={20} /> },
     { name: "今日任務", href: "/today", icon: <Clock size={20} />, count: 4 },
     { name: "已計畫", href: "/planned", icon: <Calendar size={20} />, count: 12 },
     { name: "重要任務", href: "/important", icon: <Star size={20} />, count: 3 },

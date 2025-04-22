@@ -21,7 +21,7 @@ export default function Home() {
         const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
 
         if (isAuthenticated) {
-          router.push("/dashboard");
+          router.push("/today");
         } else {
           // 如果用戶未登入，顯示登入頁面
           setCheckingAuth(false);
