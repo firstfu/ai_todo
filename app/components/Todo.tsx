@@ -37,7 +37,7 @@ const priorityColors: Record<TodoPriority, string> = {
 };
 
 // 優先級到圖標的映射
-const priorityIcons: Record<TodoPriority, JSX.Element> = {
+const priorityIcons: Record<TodoPriority, React.ReactNode> = {
   low: <div className="w-2 h-2 rounded-full bg-blue-500"></div>,
   medium: <div className="w-2 h-2 rounded-full bg-yellow-500"></div>,
   high: <div className="w-2 h-2 rounded-full bg-orange-500"></div>,
@@ -103,8 +103,11 @@ export function TodoItem({ todo, onToggleComplete, onToggleStar, onDelete, onEdi
           {todo.tags.map(tag => (
             <div
               key={tag.id}
-              className={`inline-flex items-center px-2 py-0.5 rounded bg-${tag.color}-100 text-${tag.color}-800`}
-              style={{ backgroundColor: `rgb(var(--color-${tag.color}-100))` }}
+              className={`inline-flex items-center px-2 py-0.5 rounded`}
+              style={{
+                backgroundColor: `rgba(var(--color-${tag.color}-100), 1)`,
+                color: `rgba(var(--color-${tag.color}-800), 1)`,
+              }}
             >
               <Tag size={12} className="mr-1" />
               {tag.name}

@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { TodoList, Todo, TodoTag } from "../../components/Todo";
-import { motion } from "framer-motion";
-import { Tag, Calendar, Users, MoreHorizontal, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Tag, Calendar, Users, MoreHorizontal, ChevronRight, X, Plus, Edit as EditIcon } from "lucide-react";
 import Link from "next/link";
 
 // 自定義清單示例數據
@@ -194,6 +194,32 @@ export default function CustomListPage() {
 
   const [list, setList] = useState(customLists[listId as keyof typeof customLists]);
   const [tasks, setTasks] = useState<Todo[]>([]);
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [showEditListModal, setShowEditListModal] = useState(false);
+
+  // 新任務表單狀態
+  const [newTask, setNewTask] = useState<{
+    title: string;
+    description: string;
+    priority: "low" | "medium" | "high" | "urgent";
+    dueDate: string;
+  }>({
+    title: "",
+    description: "",
+    priority: "medium",
+    dueDate: "",
+  });
+
+  // 編輯清單表單狀態
+  const [editedList, setEditedList] = useState<{
+    name: string;
+    description: string;
+    color: string;
+  }>({
+    name: "",
+    description: "",
+    color: "purple",
+  });
 
   useEffect(() => {
     // 使用預定義的模擬數據而不是動態生成
@@ -204,6 +230,17 @@ export default function CustomListPage() {
       setTasks([]);
     }
   }, [listId]);
+
+  useEffect(() => {
+    // 當 list 變化時，更新編輯清單的初始值
+    if (list) {
+      setEditedList({
+        name: list.name,
+        description: list.description,
+        color: list.color,
+      });
+    }
+  }, [list]);
 
   // 如果清單不存在
   if (!list) {
@@ -228,6 +265,52 @@ export default function CustomListPage() {
 
   // 檢查是否有逾期任務
   const hasDueTasks = tasks.some(task => task.dueDate && new Date(task.dueDate) < new Date() && !task.completed);
+
+  // 處理新增任務提交
+  const handleAddTask = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // 創建新任務
+    const newTodoItem: Todo = {
+      id: `${listId}${tasks.length + 1}`,
+      title: newTask.title,
+      description: newTask.description,
+      completed: false,
+      priority: newTask.priority,
+      dueDate: newTask.dueDate ? new Date(newTask.dueDate) : undefined,
+      tags: [{ id: listId, name: list.name, color: list.color }],
+      isStarred: false,
+      createdAt: new Date(),
+    };
+
+    // 更新任務列表
+    setTasks(prev => [...prev, newTodoItem]);
+
+    // 重置表單並關閉模態框
+    setNewTask({
+      title: "",
+      description: "",
+      priority: "medium",
+      dueDate: "",
+    });
+    setShowAddTaskModal(false);
+  };
+
+  // 處理編輯清單提交
+  const handleEditList = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // 更新清單信息
+    setList(prev => ({
+      ...prev,
+      name: editedList.name,
+      description: editedList.description,
+      color: editedList.color,
+    }));
+
+    // 關閉模態框
+    setShowEditListModal(false);
+  };
 
   return (
     <>
@@ -295,10 +378,207 @@ export default function CustomListPage() {
 
         {/* 底部操作 */}
         <div className="flex justify-center space-x-4 py-4">
-          <button className="px-4 py-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors">新增任務</button>
-          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors">編輯清單</button>
+          <button
+            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors"
+            onClick={() => setShowAddTaskModal(true)}
+          >
+            新增任務
+          </button>
+          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors" onClick={() => setShowEditListModal(true)}>
+            編輯清單
+          </button>
         </div>
       </div>
+
+      {/* 新增任務模態框 */}
+      <AnimatePresence>
+        {showAddTaskModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-lg shadow-xl w-full max-w-md"
+            >
+              <div className="flex justify-between items-center p-4 border-b">
+                <h2 className="text-lg font-medium text-gray-900 flex items-center">
+                  <Plus className="h-5 w-5 mr-2 text-purple-600" />
+                  新增任務
+                </h2>
+                <button className="text-gray-400 hover:text-gray-500" onClick={() => setShowAddTaskModal(false)}>
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddTask} className="p-4 space-y-4">
+                <div>
+                  <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                    任務標題 *
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                    value={newTask.title}
+                    onChange={e => setNewTask({ ...newTask, title: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                    任務描述
+                  </label>
+                  <textarea
+                    id="description"
+                    rows={3}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                    value={newTask.description}
+                    onChange={e => setNewTask({ ...newTask, description: e.target.value })}
+                  ></textarea>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="priority" className="block text-sm font-medium text-gray-700">
+                      優先級
+                    </label>
+                    <select
+                      id="priority"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                      value={newTask.priority}
+                      onChange={e => setNewTask({ ...newTask, priority: e.target.value as "low" | "medium" | "high" | "urgent" })}
+                    >
+                      <option value="low">低</option>
+                      <option value="medium">中</option>
+                      <option value="high">高</option>
+                      <option value="urgent">緊急</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700">
+                      截止日期
+                    </label>
+                    <input
+                      type="date"
+                      id="dueDate"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                      value={newTask.dueDate}
+                      onChange={e => setNewTask({ ...newTask, dueDate: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-3 border-t">
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                    onClick={() => setShowAddTaskModal(false)}
+                  >
+                    取消
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                    disabled={!newTask.title}
+                  >
+                    新增
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* 編輯清單模態框 */}
+      <AnimatePresence>
+        {showEditListModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-lg shadow-xl w-full max-w-md"
+            >
+              <div className="flex justify-between items-center p-4 border-b">
+                <h2 className="text-lg font-medium text-gray-900 flex items-center">
+                  <EditIcon className="h-5 w-5 mr-2 text-gray-600" />
+                  編輯清單
+                </h2>
+                <button className="text-gray-400 hover:text-gray-500" onClick={() => setShowEditListModal(false)}>
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleEditList} className="p-4 space-y-4">
+                <div>
+                  <label htmlFor="listName" className="block text-sm font-medium text-gray-700">
+                    清單名稱 *
+                  </label>
+                  <input
+                    type="text"
+                    id="listName"
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                    value={editedList.name}
+                    onChange={e => setEditedList({ ...editedList, name: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="listDescription" className="block text-sm font-medium text-gray-700">
+                    清單描述
+                  </label>
+                  <textarea
+                    id="listDescription"
+                    rows={3}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                    value={editedList.description}
+                    onChange={e => setEditedList({ ...editedList, description: e.target.value })}
+                  ></textarea>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">顏色</label>
+                  <div className="grid grid-cols-8 gap-2">
+                    {["purple", "blue", "green", "red", "yellow", "pink", "gray", "indigo"].map(color => (
+                      <button
+                        key={color}
+                        type="button"
+                        className={`tag-color-circle ${color === editedList.color ? "ring-2 ring-offset-2 ring-gray-400" : ""}`}
+                        style={{
+                          backgroundColor: `rgb(var(--color-${color}-500))`,
+                        }}
+                        onClick={() => setEditedList({ ...editedList, color })}
+                        aria-label={`選擇${color}顏色`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-3 border-t">
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                    onClick={() => setShowEditListModal(false)}
+                  >
+                    取消
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                    disabled={!editedList.name}
+                  >
+                    儲存
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
