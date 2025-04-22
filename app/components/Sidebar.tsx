@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Calendar, CheckCircle, ListTodo, Plus, Settings, Star, BarChart2, Clock, Bell, FolderPlus } from "lucide-react";
+import { ListTodo, Plus, Settings, BarChart2, Bell, FolderPlus } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -22,13 +22,7 @@ export default function Sidebar() {
     { id: "shopping", name: "購物清單", count: 3 },
   ]);
 
-  const mainNavItems: NavItem[] = [
-    { name: "今日任務", href: "/today", icon: <Clock size={20} />, count: 4 },
-    { name: "已計畫", href: "/planned", icon: <Calendar size={20} />, count: 12 },
-    { name: "重要任務", href: "/important", icon: <Star size={20} />, count: 3 },
-    { name: "所有任務", href: "/tasks", icon: <ListTodo size={20} />, count: 23 },
-    { name: "已完成", href: "/completed", icon: <CheckCircle size={20} />, count: 42 },
-  ];
+  const mainNavItems: NavItem[] = [{ name: "所有任務", href: "/tasks", icon: <ListTodo size={20} />, count: 23 }];
 
   const additionalNavItems: NavItem[] = [
     { name: "統計分析", href: "/stats", icon: <BarChart2 size={20} /> },
