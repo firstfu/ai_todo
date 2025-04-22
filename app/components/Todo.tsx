@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Circle, CheckCircle, Star, Clock, Calendar, Tag, MoreHorizontal, Trash2, Edit, AlertTriangle } from "lucide-react";
 
@@ -143,7 +143,13 @@ type TodoListProps = {
 };
 
 export function TodoList({ todos, title, emptyMessage = "目前沒有任務" }: TodoListProps) {
+  // 使用 useEffect 來更新 localTodos，確保當 props.todos 變更時能夠同步更新
   const [localTodos, setLocalTodos] = useState<Todo[]>(todos);
+
+  // 添加 useEffect 監聽 todos 變更
+  useEffect(() => {
+    setLocalTodos(todos);
+  }, [todos]);
 
   // 處理完成狀態切換
   const handleToggleComplete = (id: string) => {
