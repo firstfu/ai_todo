@@ -130,14 +130,6 @@ export default function Sidebar() {
           ))}
         </nav>
       </div>
-
-      {/* 快速添加按鈕 */}
-      <div className="p-4 border-t border-gray-200">
-        <button className="w-full flex items-center justify-center py-2 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-          <Plus size={20} />
-          {!isCollapsed && <span className="ml-2">新增任務</span>}
-        </button>
-      </div>
     </div>
   );
 }
