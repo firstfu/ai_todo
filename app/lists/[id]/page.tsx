@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { TodoList, Todo, TodoTag } from "../../components/Todo";
 import { motion, AnimatePresence } from "framer-motion";
-import { Tag, Calendar, Users, MoreHorizontal, ChevronRight, X, Plus, Edit as EditIcon, Filter, CheckCircle, ListX } from "lucide-react";
+import { Tag, Calendar, MoreHorizontal, ChevronRight, X, Plus, Edit as EditIcon, Filter, CheckCircle, ListX } from "lucide-react";
 import Link from "next/link";
 
 // 自定義清單示例數據

@@ -4,12 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Calendar, CheckCircle, Home, ListTodo, Plus, Settings, Star, BarChart2, Clock, Users, Bell, FolderPlus } from "lucide-react";
+import { Calendar, CheckCircle, Home, ListTodo, Plus, Settings, Star, BarChart2, Clock, Bell, FolderPlus } from "lucide-react";
 
 type NavItem = {
   name: string;
   href: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   count?: number;
 };
 
@@ -33,7 +33,6 @@ export default function Sidebar() {
 
   const additionalNavItems: NavItem[] = [
     { name: "統計分析", href: "/stats", icon: <BarChart2 size={20} /> },
-    { name: "協作共享", href: "/collaborate", icon: <Users size={20} /> },
     { name: "通知中心", href: "/notifications", icon: <Bell size={20} />, count: 2 },
     { name: "設定", href: "/settings", icon: <Settings size={20} /> },
   ];
