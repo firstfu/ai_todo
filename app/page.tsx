@@ -1,13 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 
 export default function Home() {
   const [isLogin, setIsLogin] = useState(true);
+  const router = useRouter();
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  // 檢查用戶登入狀態並重定向
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // 模擬檢查用戶是否已登入
+        // 在真實應用中，這裡會調用後端 API 或檢查本地儲存的認證令牌
+        const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+
+        if (isAuthenticated) {
+          router.push("/dashboard");
+        } else {
+          // 如果用戶未登入，顯示登入頁面
+          setCheckingAuth(false);
+        }
+      } catch (error) {
+        console.error("身份驗證檢查失敗", error);
+        setCheckingAuth(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  // 如果正在檢查登入狀態，顯示載入指示器
+  if (checkingAuth) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   // 動畫變體
   const containerVariants = {
