@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { TodoList, Todo, TodoTag } from "../../components/Todo";
 import { motion, AnimatePresence } from "framer-motion";
-import { Tag, Calendar, Users, MoreHorizontal, ChevronRight, X, Plus, Edit as EditIcon } from "lucide-react";
+import { Tag, Calendar, Users, MoreHorizontal, ChevronRight, X, Plus, Edit as EditIcon, Filter, CheckCircle, ListX } from "lucide-react";
 import Link from "next/link";
 
 // 自定義清單示例數據
@@ -196,6 +196,7 @@ export default function CustomListPage() {
   const [tasks, setTasks] = useState<Todo[]>([]);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showEditListModal, setShowEditListModal] = useState(false);
+  const [taskFilter, setTaskFilter] = useState<"all" | "pending" | "completed">("all");
 
   // 新任務表單狀態
   const [newTask, setNewTask] = useState<{
@@ -259,12 +260,25 @@ export default function CustomListPage() {
   const completedTasks = tasks.filter(task => task.completed).length;
   const completionRate = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
 
-  // 按狀態分組的任務
-  const pendingTasks = tasks.filter(task => !task.completed);
-  const completedTasksList = tasks.filter(task => task.completed);
+  // 根據篩選條件過濾任務
+  const filteredTasks = (() => {
+    switch (taskFilter) {
+      case "pending":
+        return tasks.filter(task => !task.completed);
+      case "completed":
+        return tasks.filter(task => task.completed);
+      default:
+        return tasks;
+    }
+  })();
 
   // 檢查是否有逾期任務
   const hasDueTasks = tasks.some(task => task.dueDate && new Date(task.dueDate) < new Date() && !task.completed);
+
+  // 處理任務狀態變更
+  const handleTaskChange = (updatedTask: Todo) => {
+    setTasks(prev => prev.map(task => (task.id === updatedTask.id ? updatedTask : task)));
+  };
 
   // 處理新增任務提交
   const handleAddTask = (e: React.FormEvent) => {
@@ -348,33 +362,85 @@ export default function CustomListPage() {
         </div>
       </div>
 
-      {/* 任務區塊 */}
+      {/* 整合的任務列表區塊 */}
       <div className="space-y-6">
-        {/* 待辦任務 */}
         <div className="bg-white rounded-lg shadow border border-gray-100">
           <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-            <h2 className="text-lg font-medium text-gray-900">待辦任務</h2>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{pendingTasks.length}</span>
-          </div>
-          <div className="p-5">
-            <TodoList todos={pendingTasks} emptyMessage="沒有待辦的任務" />
-          </div>
-        </div>
+            <h2 className="text-lg font-medium text-gray-900">任務列表</h2>
+            <div className="flex items-center space-x-2">
+              {/* 篩選按鈕區 */}
+              <div className="flex bg-gray-100 p-1 rounded-md">
+                <button
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                    taskFilter === "all" ? "bg-white shadow text-gray-800" : "text-gray-500 hover:text-gray-700"
+                  }`}
+                  onClick={() => setTaskFilter("all")}
+                >
+                  全部
+                </button>
+                <button
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                    taskFilter === "pending" ? "bg-white shadow text-gray-800" : "text-gray-500 hover:text-gray-700"
+                  }`}
+                  onClick={() => setTaskFilter("pending")}
+                >
+                  待辦
+                </button>
+                <button
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                    taskFilter === "completed" ? "bg-white shadow text-gray-800" : "text-gray-500 hover:text-gray-700"
+                  }`}
+                  onClick={() => setTaskFilter("completed")}
+                >
+                  已完成
+                </button>
+              </div>
 
-        {/* 已完成任務 */}
-        {completedTasksList.length > 0 && (
-          <div className="bg-white rounded-lg shadow border border-gray-100">
-            <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="text-lg font-medium text-gray-900">已完成任務</h2>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                {completedTasksList.length}
-              </span>
-            </div>
-            <div className="p-5">
-              <TodoList todos={completedTasksList} emptyMessage="沒有已完成的任務" />
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{filteredTasks.length}</span>
             </div>
           </div>
-        )}
+
+          <div className="p-5">
+            {filteredTasks.length === 0 ? (
+              <div className="py-12 flex flex-col items-center justify-center text-center">
+                {taskFilter === "all" ? (
+                  <>
+                    <ListX className="h-12 w-12 text-gray-300 mb-4" />
+                    <p className="text-gray-500 mb-2">這個清單中還沒有任務</p>
+                    <button
+                      className="mt-4 px-4 py-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors text-sm"
+                      onClick={() => setShowAddTaskModal(true)}
+                    >
+                      新增第一個任務
+                    </button>
+                  </>
+                ) : taskFilter === "pending" ? (
+                  <>
+                    <CheckCircle className="h-12 w-12 text-green-200 mb-4" />
+                    <p className="text-gray-500">所有任務都已完成！</p>
+                  </>
+                ) : (
+                  <>
+                    <Filter className="h-12 w-12 text-gray-300 mb-4" />
+                    <p className="text-gray-500">目前沒有已完成的任務</p>
+                  </>
+                )}
+              </div>
+            ) : (
+              <TodoList todos={filteredTasks} emptyMessage="沒有符合篩選條件的任務" />
+            )}
+          </div>
+
+          {filteredTasks.length > 0 && (
+            <div className="p-4 border-t border-gray-100 bg-gray-50 text-sm text-center text-gray-500">
+              {taskFilter === "all"
+                ? `顯示全部 ${filteredTasks.length} 個任務（${tasks.filter(t => !t.completed).length} 個待辦，${completedTasks} 個已完成）`
+                : taskFilter === "pending"
+                ? `顯示 ${filteredTasks.length} 個待辦任務`
+                : `顯示 ${filteredTasks.length} 個已完成任務`}
+            </div>
+          )}
+        </div>
 
         {/* 底部操作 */}
         <div className="flex justify-center space-x-4 py-4">
